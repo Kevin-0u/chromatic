@@ -524,6 +524,38 @@
     white-space: nowrap;
   }
   .strip-cell:hover .strip-hex { opacity: 1; }
+  .strip-cell.just-copied .strip-hex {
+    opacity: 1;
+    background: rgba(112,224,160,0.85);
+    color: #000;
+  }
+
+  /* ── COPY TOAST ── */
+  .copy-toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    letter-spacing: 0.06em;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    white-space: nowrap;
+  }
+  .copy-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .copy-toast .toast-hex { color: var(--accent); font-weight: 500; }
 
   /* ── RESPONSIVENESS ── */
   @media (max-width: 1100px) {
@@ -558,6 +590,8 @@
 </style>
 </head>
 <body>
+
+<div class="copy-toast" id="copyToast"></div>
 
 <header>
   <div class="logo">chrom<span>·</span>atic</div>
@@ -1013,14 +1047,30 @@ function updateStrip() {
   state.forEach(col => {
     const hex = rgbToHex(col.r, col.g, col.b);
     const name = nearestColorName(col.r, col.g, col.b);
-    // Perceived luminance — pick black or white text
-    const lum = (col.r * 0.299 + col.g * 0.587 + col.b * 0.114);
-    const textColor = lum > 140 ? '#000000' : '#ffffff';
     const cell = document.createElement('div');
     cell.className = 'strip-cell';
     cell.style.background = hex;
+    cell.title = `Click to copy ${hex}`;
     cell.innerHTML = `<span class="strip-name strip-name-white">${name}</span><span class="strip-name strip-name-black">${name}</span><span class="strip-hex">${hex}</span>`;
+    cell.addEventListener('click', () => copyHexFromStrip(cell, hex));
     strip.appendChild(cell);
+  });
+}
+
+let toastTimer = null;
+function copyHexFromStrip(cell, hex) {
+  navigator.clipboard.writeText(hex).then(() => {
+    // Flash the hex badge green
+    document.querySelectorAll('.strip-cell').forEach(c => c.classList.remove('just-copied'));
+    cell.classList.add('just-copied');
+    setTimeout(() => cell.classList.remove('just-copied'), 1200);
+
+    // Show toast
+    const toast = document.getElementById('copyToast');
+    toast.innerHTML = `Copied <span class="toast-hex">${hex}</span> to clipboard`;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
   });
 }
 
