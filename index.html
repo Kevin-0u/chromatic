@@ -292,12 +292,11 @@
     position: fixed;
     pointer-events: none;
     z-index: 9999;
-    opacity: 0.92;
+    opacity: 0.95;
     border-radius: 10px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-    border: 1px solid var(--accent);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.75), 0 0 0 1px var(--accent);
     background: var(--surface2);
-    transform: rotate(1.5deg) scale(1.02);
+    transform: translateZ(0);
     transition: none;
     overflow: hidden;
   }
@@ -972,6 +971,7 @@ let ghost = null;
 let draggingIndex = null;
 let dropIndex = null;
 let dropPosition = null; // 'above' | 'below'
+let ghostOffsetX = 0;
 let ghostOffsetY = 0;
 
 function onDragStart(e) {
@@ -980,16 +980,80 @@ function onDragStart(e) {
   const row = handle.closest('.color-row');
   draggingIndex = parseInt(row.dataset.index);
 
-  // Build ghost clone
   const rect = row.getBoundingClientRect();
+  ghostOffsetX = e.clientX - rect.left;
   ghostOffsetY = e.clientY - rect.top;
 
-  ghost = row.cloneNode(true);
+  // Build ghost as a canvas snapshot of the row's pixels
+  const dpr = window.devicePixelRatio || 1;
+  const canvas = document.createElement('canvas');
+  canvas.width  = Math.round(rect.width  * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+  canvas.style.width  = rect.width  + 'px';
+  canvas.style.height = rect.height + 'px';
+
+  // Draw background + border
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = '#17171a';
+  const r = 10;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, rect.width, rect.height, r);
+  ctx.fill();
+
+  // Draw each child element's bounding box as a filled rect to approximate layout
+  const children = row.querySelectorAll(
+    '.drag-handle, .color-index, .swatch, .hex-input, .rgb-input, .hsl-slider'
+  );
+  children.forEach(child => {
+    const cr = child.getBoundingClientRect();
+    const x = cr.left - rect.left;
+    const y = cr.top  - rect.top;
+    const w = cr.width;
+    const h = cr.height;
+    if (w <= 0 || h <= 0) return;
+
+    const cs = getComputedStyle(child);
+    ctx.fillStyle = cs.backgroundColor !== 'rgba(0, 0, 0, 0)' ? cs.backgroundColor : '#2e2e36';
+    const br = parseFloat(cs.borderRadius) || 4;
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, br);
+    ctx.fill();
+
+    // For swatch: fill with actual color
+    if (child.classList.contains('swatch')) {
+      ctx.fillStyle = child.style.background || cs.background;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, br);
+      ctx.fill();
+    }
+
+    // For text inputs: draw text value
+    if (child.tagName === 'INPUT' && child.type === 'text') {
+      ctx.fillStyle = '#e8e8ee';
+      ctx.font = '500 12px "DM Mono", monospace';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(child.value, x + 8, y + h / 2);
+    }
+  });
+
+  // Accent border
+  ctx.strokeStyle = 'rgba(200,180,255,0.6)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(0.5, 0.5, rect.width - 1, rect.height - 1, r);
+  ctx.stroke();
+
+  ghost = document.createElement('div');
   ghost.className = 'drag-ghost';
-  ghost.style.width = rect.width + 'px';
+  ghost.style.width  = rect.width  + 'px';
   ghost.style.height = rect.height + 'px';
-  ghost.style.left = rect.left + 'px';
-  ghost.style.top  = (e.clientY - ghostOffsetY) + 'px';
+  ghost.style.left   = (e.clientX - ghostOffsetX) + 'px';
+  ghost.style.top    = (e.clientY - ghostOffsetY)  + 'px';
+  ghost.style.padding = '0';
+  ghost.style.overflow = 'hidden';
+  canvas.style.display = 'block';
+  ghost.appendChild(canvas);
   document.body.appendChild(ghost);
 
   row.classList.add('is-dragging');
@@ -1003,7 +1067,8 @@ function onDragMove(e) {
   if (!ghost) return;
 
   // Move ghost
-  ghost.style.top = (e.clientY - ghostOffsetY) + 'px';
+  ghost.style.left = (e.clientX - ghostOffsetX) + 'px';
+  ghost.style.top  = (e.clientY - ghostOffsetY) + 'px';
 
   // Clear previous indicators
   clearDropIndicators();
