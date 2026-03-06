@@ -95,17 +95,17 @@ The export generates Pine Script v5 compatible syntax. Hex color literals are us
 
 ## Default Palette
 
-| Index | Default Color         |
-|-------|-----------------------|
-| 0     | Red-Orange `#DC503C`  |
-| 1     | Orange `#EB9632`      |
-| 2     | Yellow `#F5D246`      |
-| 3     | Green `#5ABE5A`       |
-| 4     | Sky Blue `#32A0C8`    |
-| 5     | Blue `#5064D2`        |
-| 6     | Purple `#9646D2`      |
-| 7     | Pink `#D24646`        |
-| 8     | Gray `#828282`        |
+| Index | Default Color              |
+|-------|----------------------------|
+| 0     | Red-Orange `#DC503C`       |
+| 1     | Orange `#EB9632`           |
+| 2     | Yellow `#F5D246`           |
+| 3     | Green `#5ABE5A`            |
+| 4     | Sky Blue `#32A0C8`         |
+| 5     | Blue `#5064D2`             |
+| 6     | Purple `#9646D2`           |
+| 7     | Pink `#D24646`             |
+| 8     | Light Slate Gray `#778899` |
 
 ---
 
