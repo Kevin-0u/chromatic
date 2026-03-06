@@ -1266,12 +1266,12 @@ function buildPineScript() {
   // Individual color variables
   lines.push(`<span class="pine-comment">// Individual color variables</span>`);
 
-  const maxIdentLen = `color_${state.length - 1}`.length;
+  const maxIdentLen = `COLOR${state.length - 1}`.length;
 
   state.forEach((col, i) => {
     const hex = rgbToHex(col.r, col.g, col.b);
     const name = nearestColorName(col.r, col.g, col.b);
-    const ident = `color_${i}`;
+    const ident = `COLOR${i}`;
     const varPart = pad(`<span class="pine-keyword">var</span> <span class="pine-varname">${ident}</span>`, maxIdentLen + 22);
     lines.push(`${varPart} = <span class="pine-hex">${hex}</span> <span class="pine-comment">// [${i}] ${name}</span>`);
   });
