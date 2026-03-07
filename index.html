@@ -331,7 +331,7 @@
     display: grid;
     grid-template-columns: 64px 1fr 1fr 1fr;
     gap: 12px;
-    align-items: center;
+    align-items: start;
   }
 
   /* Swatch */
@@ -382,7 +382,7 @@
   .rgb-wrap { display: flex; gap: 6px; }
   .rgb-field {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 3px;
     flex: 1;
   }
@@ -395,12 +395,12 @@
   }
   .rgb-input {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 13px;
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 5px;
+    border-radius: 6px;
     color: var(--text);
-    padding: 7px 4px;
+    padding: 8px 4px;
     text-align: center;
     width: 100%;
     outline: none;
