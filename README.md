@@ -45,9 +45,14 @@ The **Export Pine Script** button opens a modal with syntax-highlighted Pine Scr
 
 The modal includes a **Copy to Clipboard** button that strips syntax highlighting and copies clean, paste-ready Pine Script text, confirmed with a ✓ flash.
 
-### Reset
+### Palette Presets
 
-The **Reset** button in the header restores all 9 colors and their sequence to the default palette. The icon rotates on hover as a visual cue.
+A **preset dropdown** in the header lets you instantly load a built-in palette. Two presets are available:
+
+- **Sequential** — colors progress through the hue spectrum, starting with Light Slate Gray as a neutral anchor.
+- **Diverging** — colors alternate between warm and cool tones, following the data visualization convention for diverging palettes.
+
+Selecting a preset applies it immediately and updates all inputs, the palette strip, and the canvas previews.
 
 ---
 
@@ -58,7 +63,7 @@ The **Reset** button in the header restores all 9 colors and their sequence to t
 3. Drag rows by their ⠿ handle to reorder the sequence.
 4. Click any swatch in the **Palette Overview** strip to copy its hex code.
 5. Click **Export Pine Script** to generate and copy color variables for use in TradingView Pine Script indicators or strategies.
-6. Click **Reset** to restore the default palette at any time.
+6. Use the **preset dropdown** to load the Sequential or Diverging built-in palette at any time.
 
 ---
 
@@ -93,19 +98,39 @@ The export generates Pine Script v5 compatible syntax. Hex color literals are us
 
 ---
 
-## Default Palette
+## Preset Reference
 
-| Index | Default Color              |
+### Sequential
+
+Colors ordered by hue spectrum, starting with a neutral gray anchor.
+
+| Index | Color                      |
 |-------|----------------------------|
-| 0     | Red-Orange `#DC503C`       |
-| 1     | Orange `#EB9632`           |
-| 2     | Yellow `#F5D246`           |
-| 3     | Green `#5ABE5A`            |
-| 4     | Sky Blue `#32A0C8`         |
-| 5     | Blue `#5064D2`             |
-| 6     | Purple `#9646D2`           |
-| 7     | Pink `#D24646`             |
-| 8     | Light Slate Gray `#778899` |
+| 0     | Light Slate Gray `#778899` |
+| 1     | Red-Orange `#DC503C`       |
+| 2     | Orange `#EB9632`           |
+| 3     | Yellow `#F5D246`           |
+| 4     | Green `#5ABE5A`            |
+| 5     | Sky Blue `#32A0C8`         |
+| 6     | Blue `#5064D2`             |
+| 7     | Purple `#9646D2`           |
+| 8     | Pink `#D2468C`             |
+
+### Diverging
+
+Warm and cool tones interleaved for maximum contrast between adjacent colors.
+
+| Index | Color                      |
+|-------|----------------------------|
+| 0     | Light Slate Gray `#778899` |
+| 1     | Yellow `#F5D246`           |
+| 2     | Blue `#5064D2`             |
+| 3     | Red-Orange `#DC503C`       |
+| 4     | Green `#5ABE5A`            |
+| 5     | Pink `#D2468C`             |
+| 6     | Sky Blue `#32A0C8`         |
+| 7     | Purple `#9646D2`           |
+| 8     | Orange `#EB9632`           |
 
 ---
 

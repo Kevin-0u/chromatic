@@ -56,7 +56,12 @@
     text-transform: uppercase;
   }
 
-  #resetBtn {
+  .preset-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .preset-btn {
     display: flex;
     align-items: center;
     gap: 7px;
@@ -70,12 +75,53 @@
     border-radius: 6px;
     padding: 7px 14px;
     cursor: pointer;
-    transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.1s;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    user-select: none;
+    white-space: nowrap;
   }
-  #resetBtn:hover { color: var(--text); border-color: var(--border2); background: var(--surface); }
-  #resetBtn:active { transform: scale(0.96); }
-  #resetBtn svg { flex-shrink: 0; transition: transform 0.4s ease; }
-  #resetBtn:hover svg { transform: rotate(-180deg); }
+  .preset-btn:hover { color: var(--text); border-color: var(--border2); background: var(--surface); }
+  .preset-btn .chevron { transition: transform 0.2s; flex-shrink: 0; }
+  .preset-btn.open .chevron { transform: rotate(180deg); }
+
+  .preset-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    z-index: 200;
+    min-width: 200px;
+  }
+  .preset-dropdown.open { display: block; animation: fadeUp 0.15s ease; }
+  .preset-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.12s;
+  }
+  .preset-item:last-child { border-bottom: none; }
+  .preset-item:hover { background: var(--surface); }
+  .preset-item.active { background: rgba(200,180,255,0.07); }
+  .preset-item-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .preset-item.active .preset-item-name { color: var(--accent); }
+  .preset-item-desc {
+    font-family: var(--sans);
+    font-size: 10px;
+    color: var(--text3);
+  }
 
   .header-btns { display: flex; gap: 8px; align-items: center; }
 
@@ -636,13 +682,26 @@
       </svg>
       Export Pine Script
     </button>
-    <button id="resetBtn" onclick="resetPalette()" title="Reset to default palette">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-        <path d="M3 3v5h5"/>
-      </svg>
-      Reset
-    </button>
+    <div class="preset-wrap" id="presetWrap">
+      <button class="preset-btn" id="presetBtn" onclick="togglePresetDropdown()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        <span id="presetLabel">Sequential</span>
+        <svg class="chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="preset-dropdown" id="presetDropdown">
+        <div class="preset-item active" id="preset-0" onclick="applyPreset(0)">
+          <span class="preset-item-name">Sequential</span>
+          <span class="preset-item-desc">Colors ordered by hue spectrum</span>
+        </div>
+        <div class="preset-item" id="preset-1" onclick="applyPreset(1)">
+          <span class="preset-item-name">Diverging</span>
+          <span class="preset-item-desc">Alternating warm and cool tones</span>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -704,6 +763,7 @@
 <script>
 // ─── STATE ────────────────────────────────────────────────────────────────────
 const DEFAULT_COLORS = [
+  [119, 136, 153],
   [220, 80,  60],
   [235, 150, 50],
   [245, 210, 70],
@@ -712,7 +772,6 @@ const DEFAULT_COLORS = [
   [80,  100, 210],
   [150, 70,  210],
   [210, 70,  140],
-  [119, 136, 153],
 ];
 
 const state = DEFAULT_COLORS.map(c => ({r:c[0], g:c[1], b:c[2]}));
@@ -1346,25 +1405,72 @@ function copyPine() {
 }
 
 
-const DEFAULTS = [
-  [220, 80,  60],
-  [235, 150, 50],
-  [245, 210, 70],
-  [90,  190, 90],
-  [50,  160, 200],
-  [80,  100, 210],
-  [150, 70,  210],
-  [210, 70,  140],
-  [130, 130, 130],
+// ─── PRESETS ──────────────────────────────────────────────────────────────────
+const PRESETS = [
+  {
+    name: 'Sequential',
+    colors: [
+      [119, 136, 153],
+      [220, 80,  60],
+      [235, 150, 50],
+      [245, 210, 70],
+      [90,  190, 90],
+      [50,  160, 200],
+      [80,  100, 210],
+      [150, 70,  210],
+      [210, 70,  140],
+    ]
+  },
+  {
+    name: 'Diverging',
+    colors: [
+      [0x77, 0x88, 0x99], // #778899
+      [0xF5, 0xD2, 0x46], // #F5D246
+      [0x50, 0x64, 0xD2], // #5064D2
+      [0xDC, 0x50, 0x3C], // #DC503C
+      [0x5A, 0xBE, 0x5A], // #5ABE5A
+      [0xD2, 0x46, 0x8C], // #D2468C
+      [0x32, 0xA0, 0xC8], // #32A0C8
+      [0x96, 0x46, 0xD2], // #9646D2
+      [0xEB, 0x96, 0x32], // #EB9632
+    ]
+  }
 ];
 
-function resetPalette() {
-  DEFAULTS.forEach(([r,g,b], i) => { state[i] = {r,g,b}; });
+let activePreset = 0;
+
+function applyPreset(index) {
+  activePreset = index;
+  const colors = PRESETS[index].colors;
+  colors.forEach(([r,g,b], i) => { state[i] = {r,g,b}; });
   buildEditor();
   initDragAndDrop();
   updateStrip();
   renderCanvases();
+
+  // Update dropdown UI
+  document.getElementById('presetLabel').textContent = PRESETS[index].name;
+  PRESETS.forEach((_, i) => {
+    const el = document.getElementById(`preset-${i}`);
+    el.classList.toggle('active', i === index);
+  });
+  closePresetDropdown();
 }
+
+function togglePresetDropdown() {
+  const btn = document.getElementById('presetBtn');
+  const dd  = document.getElementById('presetDropdown');
+  const open = dd.classList.toggle('open');
+  btn.classList.toggle('open', open);
+}
+function closePresetDropdown() {
+  document.getElementById('presetBtn').classList.remove('open');
+  document.getElementById('presetDropdown').classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if (!document.getElementById('presetWrap').contains(e.target)) closePresetDropdown();
+});
+
 buildEditor();
 initDragAndDrop();
 updateStrip();
