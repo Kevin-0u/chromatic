@@ -700,6 +700,10 @@
           <span class="preset-item-name">Diverging</span>
           <span class="preset-item-desc">Alternating warm and cool tones</span>
         </div>
+        <div class="preset-item" id="preset-2" onclick="applyPreset(2)">
+          <span class="preset-item-name">Vivid</span>
+          <span class="preset-item-desc">High-contrast vivid colors for dark backgrounds</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1433,6 +1437,20 @@ const PRESETS = [
       [0x32, 0xA0, 0xC8], // #32A0C8
       [0x96, 0x46, 0xD2], // #9646D2
       [0xEB, 0x96, 0x32], // #EB9632
+    ]
+  },
+  {
+    name: 'Vivid',
+    colors: [
+      [0xAF, 0xC0, 0xC0], // #AFC0C0
+      [0xFF, 0xD7, 0x00], // #FFD700
+      [0x00, 0x7B, 0xFF], // #007BFF
+      [0xFF, 0x14, 0x93], // #FF1493
+      [0xA5, 0xFF, 0x00], // #A5FF00
+      [0x8A, 0x2B, 0xE2], // #8A2BE2
+      [0x00, 0xFF, 0xFF], // #00FFFF
+      [0xFF, 0x00, 0xFF], // #FF00FF
+      [0xFF, 0x8C, 0x00], // #FF8C00
     ]
   }
 ];

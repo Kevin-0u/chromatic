@@ -51,6 +51,7 @@ A **preset dropdown** in the header lets you instantly load a built-in palette. 
 
 - **Sequential** — colors progress through the hue spectrum, starting with Light Slate Gray as a neutral anchor.
 - **Diverging** — colors alternate between warm and cool tones, following the data visualization convention for diverging palettes.
+- **Vivid** — high-contrast vivid colors optimized for dark backgrounds.
 
 Selecting a preset applies it immediately and updates all inputs, the palette strip, and the canvas previews.
 
@@ -131,6 +132,22 @@ Warm and cool tones interleaved for maximum contrast between adjacent colors.
 | 6     | Sky Blue `#32A0C8`         |
 | 7     | Purple `#9646D2`           |
 | 8     | Orange `#EB9632`           |
+
+### Vivid
+
+High-contrast vivid colors optimized for dark backgrounds.
+
+| Index | Color                      |
+|-------|----------------------------|
+| 0     | Cadet Blue `#AFC0C0`       |
+| 1     | Gold `#FFD700`             |
+| 2     | Dodger Blue `#007BFF`      |
+| 3     | Deep Pink `#FF1493`        |
+| 4     | Chartreuse `#A5FF00`       |
+| 5     | Blue Violet `#8A2BE2`      |
+| 6     | Cyan `#00FFFF`             |
+| 7     | Magenta `#FF00FF`          |
+| 8     | Dark Orange `#FF8C00`      |
 
 ---
 
